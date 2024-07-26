@@ -77,8 +77,6 @@ export default {
       this.$nextTick(() => {
         this.$refs.inputBox[inputLength].focus()
       })
-
-
     },
     //删除功能
     handleDelItem(index, id) {
