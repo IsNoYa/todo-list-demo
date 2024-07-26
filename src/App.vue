@@ -5,6 +5,14 @@
         <div>+</div>
         <h2>Todo List</h2>
       </div>
+      <div class="header-left">
+        <input
+          type="text"
+          v-model="searchQuery"
+          placeholder="搜索任务"
+          class="search-input"
+        >
+      </div>
       <div class="header-right">
         <button class="headerAllSelect" @click="handleAllSelect">全选</button>
         <button class="headerAdd" @click="handleAdd">添加</button>
@@ -12,7 +20,7 @@
     </div>
     <div class="content">
       <div class="content-item"
-           v-for="(item,index) in todoList" :key="item.id">
+        v-for="(item, index) in filteredTodoList" :key="item.id">
         <!-- 选中 , checkBox -->
         <div class="content-left" @click="handleSelect(index,item.id)">
           <span
@@ -27,6 +35,7 @@
             :disabled="item.isCheck"
             :class="item.isCheck ? 'line-through' : ''"
             @blur="handleBlur"
+            placeholder="请输入待办事项"
             ref="inputBox"
         >
         <!--  info -->
@@ -46,7 +55,15 @@ export default {
   name: 'App',
   data() {
     return {
-      todoList: []
+      todoList: [],
+      searchQuery: ''
+    }
+  },
+  computed: {
+    filteredTodoList() {
+      return this.todoList.filter(item => 
+        item.text.toLowerCase().includes(this.searchQuery.toLowerCase())
+      )
     }
   },
   created() {
@@ -54,7 +71,6 @@ export default {
     if (getList === null) {
       this.todoList = [{
         id: this.randomID(),
-        text: "请点击上方的添加按钮添加事件",
         isSelected: false,
         time: dayjs(new Date).format('YY-MM-DD HH:mm')
       }]
@@ -103,14 +119,19 @@ export default {
       this.todoList.forEach(item => {
         // console.log(item);
         // if (item.isCheck) return
-
-        item.isCheck = !item.isCheck
-        this.storage()
+      const allChecked = this.todoList.every(item => item.isCheck)
+      this.todoList.forEach(item => {
+        item.isCheck = !allChecked
+      })
+      this.storage()
 
       })
     },
     // 判断是否输入完成
     handleBlur() {
+      if (!this.todoList[this.todoList.length - 1].text.trim()) { // 如果输入为空，则保留默认文本
+    this.todoList[this.todoList.length - 1].text = "请点按上方的添加按钮添加事件";
+  }
       this.storage()
     },
 
@@ -127,6 +148,16 @@ export default {
 </script>
 
 <style lang="less">
+/* 添加搜索框的样式 */
+.search-input {
+  padding: 7px;
+  margin-right: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  width: 250px; /* 设置宽度 */
+}
+
 button {
   padding: 5px 10px;
   border: none;
