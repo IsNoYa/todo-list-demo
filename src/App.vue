@@ -116,16 +116,11 @@ export default {
     },
     //全选功能
     handleAllSelect() {
-      this.todoList.forEach(item => {
-        // console.log(item);
-        // if (item.isCheck) return
       const allChecked = this.todoList.every(item => item.isCheck)
       this.todoList.forEach(item => {
         item.isCheck = !allChecked
       })
       this.storage()
-
-      })
     },
     // 判断是否输入完成
     handleBlur() {
